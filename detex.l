@@ -386,7 +386,7 @@ Z	\*?
 								putchar(')');
 								footnoteLevel = -100;
 							}
-							IGNORE;}
+							SPACE;}
 <Normal>{W}[']*{W}				{   if (fWord)
 							(void)printf("%s\n", yytext);
 						    else
