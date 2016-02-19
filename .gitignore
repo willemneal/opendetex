@@ -2,3 +2,4 @@ delatex
 detex
 detex.c
 detex.o
+*.tar.bz2

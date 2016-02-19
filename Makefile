@@ -125,7 +125,7 @@ man-page:
 
 # If you want detex available as delatex, uncomment the last two lines of
 # this target
-install: detex
+install: testing
 	rm -f ${DESTDIR}/detex
 	install -c -m 775 -g staff -s detex ${DESTDIR}
 #	rm -f ${DESTDIR}/delatex
@@ -134,6 +134,7 @@ install: detex
 clean:
 	-rm -f a.out core *.s *.o ERRS errs .,* .emacs_[0-9]*
 	-rm -f ${PROGS} xxx.l lex.yy.c lexout.c detex.c
+	-rm *.tar.bz2
 
 print:	${HDR} ${SRC}
 	${LPR} Makefile ${HDR} ${SRC}
@@ -144,11 +145,8 @@ testing: all
 run: delatex
 	./delatex in > out.txt
 
-package:
-	rm -fr opendetex/
-	svn export http://opendetex.googlecode.com/svn/trunk/ opendetex/
-	tar cjfv opendetex-${VERSION}.tar.bz2 opendetex/
-	rm -fr opendetex/
+package: clean
+	tar cjfv opendetex-${VERSION}.tar.bz2 ChangeLog COPYRIGHT detex.* INSTALL Makefile os2 README states.sed
 
 # Dependencies
 #
