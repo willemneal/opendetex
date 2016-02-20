@@ -75,18 +75,18 @@ static char	rcsid[] = "$Header: /p/src/local/bin/detex/RCS/detex.l,v 2.22 2007/0
 #define NO_MALLOC_DECL
 
 void AddInclude(char *sbFile);
-void ErrorExit(char *sb1);
+void ErrorExit(const char *sb1);
 void IncludeFile(char *sbFile);
 void InputFile(char *sbFile);
-void SetEnvIgnore(char *sbEnvList);
+void SetEnvIgnore(const char *sbEnvList);
 void SetInputPaths(void);
-void Warning(char *sb1, char *sb2);
-int BeginEnv(char *sbEnv);
-int EndEnv(char *sbEnv);
+void Warning(const char *sb1, const char *sb2);
+int BeginEnv(const char *sbEnv);
+int EndEnv(const char *sbEnv);
 int InList(char *sbFile);
 int SeparateList(char *sbList, char *rgsbList[] ,char chSep, int csbMax);
 FILE *TexOpen(char *sbFile);
-char *SafeMalloc(int cch, char *sbMessage);
+char *SafeMalloc(int cch, const char *sbMessage);
 char *getenv();
 #ifndef NO_MALLOC_DECL
 char	*malloc();
@@ -96,19 +96,6 @@ void	yyless(int);
 void	OS2UsageExit(void);
 #endif
 
-int BeginEnv(char*);
-int EndEnv(char*);
-void InputFile(char*);
-void IncludeFile(char*);
-void AddInclude(char*);
-void SetEnvIgnore(char*);
-void SetInputPaths(void);
-int InList(char*);
-int SeparateList(char*, char**, char, int);
-FILE* TexOpen(char*);
-char* SafeMalloc(int,char*);
-void Warning(char*,char*);
-void ErrorExit(char*);
 void UsageExit(void);
 
 char	*rgsbEnvIgnore[MAXENVS];	/* list of environments ignored */
@@ -461,7 +448,8 @@ Z	\*?
 int
 main(int cArgs, char *rgsbArgs[])
 {
-	char	*pch, *sbEnvList = DEFAULTENV, sbBadOpt[2];
+	char	*pch, sbBadOpt[2];
+	const char *sbEnvList = DEFAULTENV;
 	int	fSawFile = 0, iArgs = 1;
 	
 	/* get base name and decide what we are doing, detex or delatex */
@@ -603,7 +591,7 @@ yyless(int n)
 ******/
 
 void
-SetEnvIgnore(char *sbEnvList)
+SetEnvIgnore(const char *sbEnvList)
 {
 	char *sb;
 	/*int sbLen;
@@ -627,7 +615,7 @@ SetEnvIgnore(char *sbEnvList)
 ******/
 
 int
-BeginEnv(char *sbEnv)
+BeginEnv(const char *sbEnv)
 {
 	int	i;
 
@@ -645,7 +633,7 @@ BeginEnv(char *sbEnv)
 ******/
 
 int
-EndEnv(char *sbEnv)
+EndEnv(const char *sbEnv)
 {
 	if (!fLatex) return(0);
 	if (strcmp(sbEnv, sbCurrentEnv) == 0)
@@ -754,7 +742,8 @@ InList(char *sbFile)
 void
 SetInputPaths(void)
 {
-	char *sb, *sbPaths;
+	const char *sb;
+	char *sbPaths;
 	int cchDefaults, cchPaths;
 
 	cchDefaults = strlen(DEFAULTINPUTS);
@@ -845,10 +834,12 @@ TexOpen(char *sbFile)
 	    /* If sbFile ends in .tex then it must be there */
 	    if ((pch = rindex(sbFullPath, '.')) != NULL
 			&& (strcmp(pch, ".tex") == 0))
+	    {
 		if ((fp = fopen(sbFullPath, "r")) != NULL)
 		    return(fp);
 		else
 		    continue;
+	    }
 
 	    /* if .<ext> then try to open it.  the '.' represents   */
 	    /* the beginning of an extension if it is not the first */
@@ -877,7 +868,7 @@ TexOpen(char *sbFile)
 ******/
 
 char *
-SafeMalloc(int cch, char *sbMessage)
+SafeMalloc(int cch, const char *sbMessage)
 {
 	char *sb;
 
@@ -891,7 +882,7 @@ SafeMalloc(int cch, char *sbMessage)
 ******/
 
 void
-Warning(char *sb1, char *sb2)
+Warning(const char *sb1, const char *sb2)
 {
 	(void)fprintf(stderr, "%s: warning: %s %s\n", sbProgName, sb1, sb2);
 }
@@ -902,7 +893,7 @@ Warning(char *sb1, char *sb2)
 ******/
 
 void
-ErrorExit(char *sb1)
+ErrorExit(const char *sb1)
 {
 	(void)fflush(stdout);
 	(void)fprintf(stderr, "%s: error: %s\n", sbProgName, sb1);
