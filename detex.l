@@ -49,6 +49,23 @@ static char	rcsid[] = "$Header: /p/src/local/bin/detex/RCS/detex.l,v 2.22 2007/0
  */
 
 #include "detex.h"
+
+#ifdef KPATHSEA
+
+#include <c-auto.h>
+#include <kpathsea/c-auto.h>
+#include <kpathsea/config.h>
+#include <kpathsea/c-memstr.h>
+#include <kpathsea/c-pathmx.h>
+#include <kpathsea/c-std.h>
+#include <kpathsea/tex-file.h>
+
+#ifdef HAVE_SYS_PARAM_H
+#include <sys/param.h>
+#endif
+
+#else /* KPATHSEA */
+
 #ifdef HAVE_STRING_H
 #include <string.h>
 #define	index	strchr
@@ -63,6 +80,10 @@ static char	rcsid[] = "$Header: /p/src/local/bin/detex/RCS/detex.l,v 2.22 2007/0
 #include <stdlib.h>
 #endif
 
+#endif /* KPATHSEA */
+
+#undef IGNORE
+
 #define	LaBEGIN		if (fLatex) BEGIN
 #define	IGNORE		if (fSpace && !fWord) putchar(' ')
 #define	SPACE		if (!fWord) putchar(' ')
@@ -76,10 +97,13 @@ static char	rcsid[] = "$Header: /p/src/local/bin/detex/RCS/detex.l,v 2.22 2007/0
 
 void AddInclude(char *sbFile);
 void ErrorExit(const char *sb1);
+void UsageExit(void);
 void IncludeFile(char *sbFile);
 void InputFile(char *sbFile);
 void SetEnvIgnore(const char *sbEnvList);
+#ifndef KPATHSEA
 void SetInputPaths(void);
+#endif
 void Warning(const char *sb1, const char *sb2);
 int BeginEnv(const char *sbEnv);
 int EndEnv(const char *sbEnv);
@@ -87,6 +111,7 @@ int InList(char *sbFile);
 int SeparateList(char *sbList, char *rgsbList[] ,char chSep, int csbMax);
 FILE *TexOpen(char *sbFile);
 char *SafeMalloc(int cch, const char *sbMessage);
+#ifndef KPATHSEA
 char *getenv();
 #ifndef NO_MALLOC_DECL
 char	*malloc();
@@ -95,14 +120,16 @@ char	*malloc();
 void	yyless(int);
 void	OS2UsageExit(void);
 #endif
-
-void UsageExit(void);
+#endif /* KPATHSEA */
 
 char	*rgsbEnvIgnore[MAXENVS];	/* list of environments ignored */
 char	*rgsbIncList[MAXINCLIST];	/* list of includeonly files */
 char	*rgsbInputPaths[MAXINPUTPATHS];	/* list of input paths in order */
 char	sbCurrentEnv[CCHMAXENV];	/* current environment being ignored */
 char	*sbProgName;			/* name we were invoked with */
+#ifndef NOFILE /* might be defined in <sys/param.h> */
+#define NOFILE 256
+#endif
 FILE	*rgfp[NOFILE+1];		/* stack of input/include files */
 int	cfp = 0;			/* count of files in stack */
 int	cOpenBrace = 0;			/* count of `{' in <LaMacro> and <LaMacro2> */
@@ -463,6 +490,9 @@ main(int cArgs, char *rgsbArgs[])
 	_splitpath (rgsbArgs[0], drive, dir, fname, ext);
 	sbProgName = strlwr(fname);
 #else
+#ifdef KPATHSEA
+	kpse_set_program_name (rgsbArgs[0], NULL);
+#endif
 	if ((sbProgName = rindex(rgsbArgs[0], '/')) != NULL)
 	    sbProgName++;
 	else
@@ -470,9 +500,11 @@ main(int cArgs, char *rgsbArgs[])
 #endif
 	if (strcmp("delatex",sbProgName) == 0)
 	    fLatex = 1;
-	
+
+#ifndef KPATHSEA
 	/* set rgsbInputPaths for use with TexOpen() */
 	SetInputPaths();
+#endif
 
 	/* process command line options */
 	while (iArgs < cArgs && *(pch = rgsbArgs[iArgs]) == CHOPT) {
@@ -715,7 +747,7 @@ AddInclude(char *sbFile)
 int
 InList(char *sbFile)
 {
-	char	*pch, sbBase[MAXPATHLEN];
+	char	*pch, sbBase[PATH_MAX];
 	int	i;
 
 	if (csbIncList == 0)	/* no list */
@@ -730,6 +762,7 @@ InList(char *sbFile)
 	return(0);
 }
 
+#ifndef KPATHSEA
 /******
 ** SetInputPaths -- sets rgsbInputPaths to the values indicated by the
 **	TEXINPUTS environment variable if set or else DEFAULTINPUTS.  If
@@ -773,6 +806,7 @@ SetInputPaths(void)
 	    ErrorExit("TEXINPUTS environment variable has too many paths");
 #endif
 }
+#endif
 
 /******
 ** SeparateList -- takes a chSep separated list sbList, replaces the
@@ -810,10 +844,12 @@ SeparateList(char *sbList, char *rgsbList[], char chSep, int csbMax)
 FILE *
 TexOpen(char *sbFile)
 {
-	char	*pch, *sbNew;
+	char	*sbNew;
+#ifndef KPATHSEA
+	char	*pch;
 	FILE	*fp;
 	int	iPath;
-	static char	sbFullPath[MAXPATHLEN];
+	static char	sbFullPath[PATH_MAX];
 
 	for (iPath = 0; iPath < csbInputPaths; iPath++) {
 #ifdef OS2
@@ -860,7 +896,15 @@ TexOpen(char *sbFile)
 	    if ((fp = fopen(sbFullPath, "r")) != NULL)
 		return(fp);
 	}
-	return((FILE *)NULL);
+	return NULL;
+#else
+	sbNew = kpse_find_file (sbFile, kpse_tex_format, false);
+
+	if (sbNew == NULL)
+	    return NULL;
+
+	return fopen (sbNew, "r");
+#endif
 }
 
 /******
