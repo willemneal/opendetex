@@ -82,6 +82,11 @@ static char	rcsid[] = "$Header: /p/src/local/bin/detex/RCS/detex.l,v 2.22 2007/0
 #include <stdlib.h>
 #endif
 
+#ifdef WIN32
+#include <fcntl.h>
+#include <io.h>
+#endif
+
 #endif /* KPATHSEA */
 
 #undef IGNORE
@@ -551,6 +556,10 @@ main(int cArgs, char *rgsbArgs[])
 		iArgs++;
 	}
 	SetEnvIgnore(sbEnvList);
+
+#ifdef WIN32
+	_setmode(fileno(stdout), _O_BINARY);
+#endif
 
 	/* process input files */
 	for (; iArgs < cArgs; iArgs++) {
