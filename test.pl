@@ -2,7 +2,7 @@
 
 my $cmd = "./delatex test/in > /tmp/testDelatex.txt";
 if ($ARGV[0] && $ARGV[0] eq '--valgrind') {
-    $cmd = "valgrind --leak-check=yes $cmd";
+    $cmd = "valgrind --leak-check=yes --leak-check=full --show-leak-kinds=all --error-exitcode=1 $cmd";
 }
 system($cmd) == 0 or die;
 my $diffResult = `diff test/correct.txt /tmp/testDelatex.txt`;

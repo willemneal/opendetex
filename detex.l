@@ -900,19 +900,23 @@ TexOpen(char *sbFile)
 	    /* character and it does not follow a '.' or a '/'      */
 	    if (pch != NULL && pch > &(sbFullPath[0])
                     && *(pch - 1) != '.' && *(pch - 1) != '/'
-		    && (fp = fopen(sbFullPath, "r")) != NULL)
-		return(fp);
+		    && (fp = fopen(sbFullPath, "r")) != NULL) {
+			return(fp);
+		}
 
 	    /* just base name, add .tex to the name */
 	    sbNew = SafeMalloc(strlen(sbFullPath) + 5, "malloc for TexOpen failed");
 	    (void)strcpy(sbNew, sbFullPath);
 	    (void)strcat(sbNew, ".tex");
-	    if ((fp = fopen(sbNew, "r")) != NULL)
-		return(fp);
+	    if ((fp = fopen(sbNew, "r")) != NULL) {
+			free(sbNew);
+			return(fp);
+		}
+		free(sbNew);
 
 	    /* try sbFile regardless */
 	    if ((fp = fopen(sbFullPath, "r")) != NULL)
-		return(fp);
+			return(fp);
 	}
 	return NULL;
 #else
