@@ -74,12 +74,26 @@ static char	rcsid[] = "$Header: /p/src/local/bin/detex/RCS/detex.l,v 2.22 2007/0
 
 #define NO_MALLOC_DECL
 
-char	*SafeMalloc();
+void AddInclude(char *sbFile);
+void ErrorExit(char *sb1);
+void IncludeFile(char *sbFile);
+void InputFile(char *sbFile);
+void SetEnvIgnore(char *sbEnvList);
+void SetInputPaths(void);
+void Warning(char *sb1, char *sb2);
+int BeginEnv(char *sbEnv);
+int EndEnv(char *sbEnv);
+int InList(char *sbFile);
+int SeparateList(char *sbList, char *rgsbList[] ,char chSep, int csbMax);
+FILE *TexOpen(char *sbFile);
+char *SafeMalloc(int cch, char *sbMessage);
+char *getenv();
 #ifndef NO_MALLOC_DECL
 char	*malloc();
 #endif
 #ifdef OS2
 void	yyless(int);
+void	OS2UsageExit(void);
 #endif
 
 int BeginEnv(char*);
@@ -444,12 +458,10 @@ Z	\*?
 **	If no input files are specified on the command line, process stdin.
 ******/
 
-int main(cArgs,rgsbArgs)
-int	cArgs;
-char	*rgsbArgs[];
+int
+main(int cArgs, char *rgsbArgs[])
 {
 	char	*pch, *sbEnvList = DEFAULTENV, sbBadOpt[2];
-	FILE	*TexOpen();
 	int	fSawFile = 0, iArgs = 1;
 	
 	/* get base name and decide what we are doing, detex or delatex */
@@ -550,7 +562,8 @@ char	*rgsbArgs[];
 **	return the termination signal for lex.
 ******/
 
-int yywrap()
+int
+yywrap(void)
 {
 	(void)fclose(yyin);
 #ifdef FLEX_SCANNER
@@ -574,8 +587,8 @@ int yywrap()
 **	a yyless routine
 ******/
 
-void yyless(n)
-int n;
+void
+yyless(int n)
 {
 	int 	i = strlen(yytext);
 
@@ -589,8 +602,8 @@ int n;
 **	sbEnvList.
 ******/
 
-void SetEnvIgnore(sbEnvList)
-char	*sbEnvList;
+void
+SetEnvIgnore(char *sbEnvList)
 {
 	char *sb;
 	/*int sbLen;
@@ -613,8 +626,8 @@ char	*sbEnvList;
 **	is, sbCurrentEnv is set to sbEnv.
 ******/
 
-int BeginEnv(sbEnv)
-char	*sbEnv;
+int
+BeginEnv(char *sbEnv)
 {
 	int	i;
 
@@ -631,8 +644,8 @@ char	*sbEnv;
 ** EndEnv -- checks to see if sbEnv is the current environment being ignored.
 ******/
 
-int EndEnv(sbEnv)
-char	*sbEnv;
+int
+EndEnv(char *sbEnv)
 {
 	if (!fLatex) return(0);
 	if (strcmp(sbEnv, sbCurrentEnv) == 0)
@@ -645,8 +658,8 @@ char	*sbEnv;
 **	the sbFile is ignored.
 ******/
 
-void InputFile(sbFile)
-char	*sbFile;
+void
+InputFile(char *sbFile)
 {
 	FILE	*TexOpen();
 
@@ -669,8 +682,8 @@ char	*sbFile;
 **	and open sbFile.  If the open fails, the sbFile is ignored.
 ******/
 
-void IncludeFile(sbFile)
-char	*sbFile;
+void
+IncludeFile(char *sbFile)
 {
 	FILE	*TexOpen();
 
@@ -695,8 +708,8 @@ char	*sbFile;
 **	If the include list is too long, sbFile is ignored.
 ******/
 
-void AddInclude(sbFile)
-char	*sbFile;
+void
+AddInclude(char *sbFile)
 {
 	if (!fFollow)
 	    return;
@@ -711,8 +724,8 @@ char	*sbFile;
 **	no list, all files are assumed to be "in the list".
 ******/
 
-int InList(sbFile)
-char	*sbFile;
+int
+InList(char *sbFile)
 {
 	char	*pch, sbBase[MAXPATHLEN];
 	int	i;
@@ -738,9 +751,10 @@ char	*sbFile;
 **	routine does not honor the '//' construct (expand subdirs).
 ******/
 
-void SetInputPaths(void)
+void
+SetInputPaths(void)
 {
-	char *sb, *sbPaths, *getenv();
+	char *sb, *sbPaths;
 	int cchDefaults, cchPaths;
 
 	cchDefaults = strlen(DEFAULTINPUTS);
@@ -778,9 +792,8 @@ void SetInputPaths(void)
 **	ERROR is returned if there are more than csbMax words.
 ******/
 
-int SeparateList(sbList, rgsbList, chSep, csbMax)
-char	*sbList, *rgsbList[], chSep;
-int	csbMax;
+int
+SeparateList(char *sbList, char *rgsbList[], char chSep, int csbMax)
 {
 	int	csbList = 0;
 
@@ -806,8 +819,7 @@ int	csbMax;
 ******/
 
 FILE *
-TexOpen(sbFile)
-char	*sbFile;
+TexOpen(char *sbFile)
 {
 	char	*pch, *sbNew;
 	FILE	*fp;
@@ -865,9 +877,7 @@ char	*sbFile;
 ******/
 
 char *
-SafeMalloc(cch, sbMessage)
-int cch;
-char *sbMessage;
+SafeMalloc(int cch, char *sbMessage)
 {
 	char *sb;
 
@@ -880,8 +890,8 @@ char *sbMessage;
 ** Warning -- print a warning message preceded by the program name.
 ******/
 
-void Warning(sb1, sb2)
-char	*sb1, *sb2;
+void
+Warning(char *sb1, char *sb2)
 {
 	(void)fprintf(stderr, "%s: warning: %s %s\n", sbProgName, sb1, sb2);
 }
@@ -891,8 +901,8 @@ char	*sb1, *sb2;
 **	Stdout is flushed and detex exits.
 ******/
 
-void ErrorExit(sb1)
-char	*sb1;
+void
+ErrorExit(char *sb1)
 {
 	(void)fflush(stdout);
 	(void)fprintf(stderr, "%s: error: %s\n", sbProgName, sb1);
@@ -903,7 +913,8 @@ char	*sb1;
 ** UsageExit -- print OS/2 usage message and exit.
 ******/
 
-void UsageExit(void)
+void
+UsageExit(void)
 {
 	(void)printf("\n%s [ -clnstw ] [ -e environment-list ] [ filename[.tex] ... ]\n",
 		sbProgName);
