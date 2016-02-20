@@ -1,0 +1,1 @@
+Before submitting pull requests please run './valgrind.sh' and make sure tests pass.

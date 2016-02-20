@@ -134,7 +134,7 @@ install: testing
 clean:
 	-rm -f a.out core *.s *.o ERRS errs .,* .emacs_[0-9]*
 	-rm -f ${PROGS} xxx.l lex.yy.c lexout.c detex.c
-	-rm *.tar.bz2
+	-rm -f *.tar.bz2
 
 print:	${HDR} ${SRC}
 	${LPR} Makefile ${HDR} ${SRC}
