@@ -497,10 +497,10 @@ main(int cArgs, char *rgsbArgs[])
 #endif
 	_splitpath (rgsbArgs[0], drive, dir, fname, ext);
 	sbProgName = strlwr(fname);
-#else
-#ifdef KPATHSEA
+#elif defined(KPATHSEA)
 	kpse_set_program_name (rgsbArgs[0], NULL);
-#endif
+	sbProgName = kpse_program_name;
+#else
 	if ((sbProgName = rindex(rgsbArgs[0], '/')) != NULL)
 	    sbProgName++;
 	else
@@ -523,7 +523,7 @@ main(int cArgs, char *rgsbArgs[])
 			break;
 		    case CHENVOPT:
 			if (++iArgs >= cArgs) {
-				ErrorExit("-e option requires and argument");
+				ErrorExit("-e option requires an argument");
 			}
 			sbEnvList = rgsbArgs[iArgs];
 			break;
