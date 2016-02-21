@@ -152,7 +152,7 @@ Making program compile on modern UNIX systems; many fixes in LaTeX
 code handling (quotes, figure and table environments, headings and
 many more).
 
-(Version 2.8.2 - UNRELEASED) -- February, 2016
+(Version 2.8.2) -- February, 2016
 Improved ANSI C compatibility. Used kpse_find_file() and
 kpse_program_name(). Handle `\kern', allow `em/ex'for dimensions,
 handle glue specs. Added the never-interactive option to prevent flex
