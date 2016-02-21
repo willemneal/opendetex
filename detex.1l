@@ -6,7 +6,7 @@ detex \- a filter to strip \fITeX\fP commands from a .tex file.
 [ \fB\-clnstw\fR ] [ \fB\-e\fI environment-list\fR ] [ \fIfilename\fR[.tex] ... ]
 .SH DESCRIPTION
 .I Detex
-(Version 2.8.1)
+(Version 2.8.2)
 reads each file in sequence, removes all comments and
 .I TeX
 control sequences
@@ -110,7 +110,9 @@ exceed the system's limit on the number of simultaneously opened files.
 .I Detex
 ignores unrecognized option characters after printing a warning message.
 .SH AUTHOR
-Daniel Trinkle, Computer Science Department, Purdue University
+Originally written by Daniel Trinkle, Computer Science Department, Purdue University
+.PP
+Maintained by Piotr Kubowicz <https://github.com/pkubowicz/opendetex>.
 .SH BUGS
 .I Detex
 is not a complete

@@ -125,11 +125,17 @@ man-page:
 
 # If you want detex available as delatex, uncomment the last two lines of
 # this target
-install: testing
+install: all
 	rm -f ${DESTDIR}/detex
 	install -c -m 775 -g staff -s detex ${DESTDIR}
+	install detex.1l /usr/local/share/man/man1
 #	rm -f ${DESTDIR}/delatex
 #	ln ${DESTDIR}/detex ${DESTDIR}/delatex
+
+uninstall:
+	rm -f ${DESTDIR}/detex
+	rm -f ${DESTDIR}/delatex
+	rm -f /usr/local/share/man/man1/detex.*
 
 clean:
 	-rm -f a.out core *.s *.o ERRS errs .,* .emacs_[0-9]*

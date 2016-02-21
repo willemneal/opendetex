@@ -161,3 +161,5 @@ ERROR -> my_ERROR to avoid a conflict with WIN32 headers. Used binary
 mode for output file (Peter Breitenlohner and Werner Lemberg)
 
 Insert a space in place of right curly brace (Eric Miotto).
+
+Provide 'make uninstall'. Install man page when running 'make install'.
