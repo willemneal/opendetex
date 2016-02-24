@@ -147,7 +147,7 @@ run: delatex
 	./delatex in > out.txt
 
 package: clean detex.c
-	tar cjfv opendetex-${VERSION}.tar.bz2 ChangeLog COPYRIGHT detex.* INSTALL Makefile os2 README
+	tar cjfv opendetex-${VERSION}.tar.bz2 ChangeLog COPYRIGHT detex.* INSTALL Makefile README
 
 # Dependencies
 #
