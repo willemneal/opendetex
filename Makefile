@@ -101,7 +101,7 @@ SRC	= detex.l
 #
 D_OBJ	= detex.o
 
-VERSION = 2.8.2
+VERSION = 2.8.3
 
 all:	${PROGS}
 
@@ -112,13 +112,8 @@ delatex: detex
 	cp detex delatex
 
 detex.c: detex.l
-	sed -f states.sed detex.l > detex-temp.l
-	${LEX} ${LFLAGS} detex-temp.l
-	rm -f detex-temp.l
+	${LEX} ${LFLAGS} detex.l
 	mv lex.yy.c detex.c
-
-lexout.c: detex.c
-	mv detex.c lexout.c
 
 man-page:
 	troff -man detex.1l
@@ -151,8 +146,8 @@ testing: all
 run: delatex
 	./delatex in > out.txt
 
-package: clean
-	tar cjfv opendetex-${VERSION}.tar.bz2 ChangeLog COPYRIGHT detex.* INSTALL Makefile os2 README states.sed
+package: clean detex.c
+	tar cjfv opendetex-${VERSION}.tar.bz2 ChangeLog COPYRIGHT detex.* INSTALL Makefile os2 README
 
 # Dependencies
 #
