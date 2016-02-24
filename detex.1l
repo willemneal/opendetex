@@ -46,8 +46,8 @@ mode regardless of input content.
 .PP
 Text in various environment modes of
 .I LaTeX
-is ignored.  The default modes are array, eqnarray, equation, figure,
-mathmatica, picture, table and verbatim.  The
+is ignored.  The default modes are array, eqnarray, equation, longtable,
+picture, tabular and verbatim.  The
 .B \-e
 option can be used to specify a comma separated
 .I environment-list

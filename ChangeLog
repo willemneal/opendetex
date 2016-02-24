@@ -166,3 +166,5 @@ Provide 'make uninstall'. Install man page when running 'make install'.
 
 (Version 2.8.3) -- UNRELEASED
 Removed states.sed that modified detex.l to avoid Lex memory overrun - no longer needed on current machines. Added detex.c to the distributed package to allow compiling OpenDetex without having Flex.
+
+Removed 'mathmatica' from the default list of environments which contents are ignored - 'mathmatica' is not supported by TeX.
