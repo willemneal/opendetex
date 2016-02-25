@@ -36,9 +36,6 @@ states.sed -	sed(1) script to munge the state names in detex.l so that
 		reasonable names can be used in the source without causing
 		lex(1) to overflow.
 
-os2 -		subdirectory containing support for compilation on
-		OS/2 and DOS systems
-
 
 This software package is distributed under the NCSA/University of
 Illinois Open Source License.
