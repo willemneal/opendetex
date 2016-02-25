@@ -23,18 +23,13 @@ detex.1l -	troff source for the detex manual page.
 		Assuming you have the -man macros, use "make man-page" to
 		generate it.
 
+detex.c -	C code generated from detex.l distributed to allow
+		building from source without having Flex installed
+
 detex.h -	Various global definitions.  These should be modified to suit
 		the local installation.
 
-detex.l -	Lex and C source for the detex program.
-
-lexout.c -	C code generated from detex.l using lex on a Sun (SunOS 4.1.1)
-		This can be useful for DOS, OS/2 or systems that don't have
-		lex.
-
-states.sed -	sed(1) script to munge the state names in detex.l so that
-		reasonable names can be used in the source without causing
-		lex(1) to overflow.
+detex.l -	Lex/Flex and C source for the detex program.
 
 
 This software package is distributed under the NCSA/University of
